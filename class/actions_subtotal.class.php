@@ -306,10 +306,13 @@ class ActionsSubtotal
 			$line = &$parameters['line'];
 			$object = &$parameters['object'];
 			$substitutionarray = &$parameters['substitutionarray'];
-			
+
+			$substitutionarray['line_modsubtotal_desc']='';
+
 			if($line->product_type == 9 && $line->special_code == $this->module_number) {
-				$substitutionarray['line_modsubtotal'] = true;	
-				
+				$substitutionarray['line_not_modsubtotal'] = false;
+			    $substitutionarray['line_modsubtotal'] = true;	
+								
 				$substitutionarray['line_price_ht']
 					 = $substitutionarray['line_price_vat'] 
 					 = $substitutionarray['line_price_ttc']
@@ -318,12 +321,15 @@ class ActionsSubtotal
 					 = $substitutionarray['line_up'] 
 					 = '';
 				
-				if($line->qty>90) {
+			     // See fields in get_substitutionarray_lines
+					 
+				if($line->qty>90) {     // Sub total
 					$substitutionarray['line_modsubtotal_total'] = true;
-					
 					$substitutionarray['line_price_ht'] = $substitutionarray['line_price_ttc'] = $this->getTotalLineFromObject($object, $line, $conf->global->SUBTOTAL_MANAGE_SUBSUBTOTAL);
-				} else {
+					$substitutionarray['line_modsubtotal_desc'] = $line->desc;
+				} else {                // Group
 					$substitutionarray['line_modsubtotal_title'] = true;
+					$substitutionarray['line_modsubtotal_desc'] = $line->desc;
 				}
 				
 				
@@ -334,7 +340,6 @@ class ActionsSubtotal
 			}
 			
 		}
-		
 	}
 	
 	function createFrom($parameters, &$object, $action, $hookmanager) {
