@@ -324,7 +324,8 @@ class ActionsSubtotal
 			     // See fields in get_substitutionarray_lines
 				if($line->qty>90) {     // Sub total
 					$substitutionarray['line_modsubtotal_total'] = true;
-					$substitutionarray['line_price_ht'] = $substitutionarray['line_price_ttc'] = $this->getTotalLineFromObject($object, $line, $conf->global->SUBTOTAL_MANAGE_SUBSUBTOTAL);
+					$substitutionarray['line_price_ht'] = $this->getTotalLineFromObject($object, $line, $conf->global->SUBTOTAL_MANAGE_SUBSUBTOTAL);
+					$substitutionarray['line_price_ttc'] = $this->getTotalTTCLineFromObject($object, $line, $conf->global->SUBTOTAL_MANAGE_SUBSUBTOTAL);
 					$substitutionarray['line_modsubtotal_desc'] = $line->desc?$line->desc:$line->label;    // Note: label is deprecated. content must be into desc
 				} else {                // Group
 					$substitutionarray['line_modsubtotal_title'] = true;
@@ -514,6 +515,33 @@ class ActionsSubtotal
 		return $total;
 	}
 
+	
+	function getTotalTTCLineFromObject(&$object, &$line, $use_level=false) {
+		
+		$rang = $line->rang;
+		$qty_line = $line->qty;
+		
+		$total = 0;
+
+		foreach($object->lines as $l) {
+			//print $l->rang.'>='.$rang.' '.$total.'<br/>';
+			if($l->rang>=$rang) {
+				//echo 'return!<br>';
+				return $total;
+			} 
+			else if($l->special_code==$this->module_number && $l->qty == 100 - $qty_line) 
+		  	{
+				$total = 0;
+			}
+			elseif($l->product_type!=9) {
+				$total += $l->total_ttc;
+			}
+			
+		}
+		
+		return $total;
+	}
+	
 	/**
 	 * @param $pdf          TCPDF               PDF object
 	 * @param $object       CommonObject        dolibarr object
