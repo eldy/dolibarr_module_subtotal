@@ -19,12 +19,16 @@ class ActionsSubtotal
 		
 		$contexts = explode(':',$parameters['context']);
 		
+		// TODO facture rec non gérée
+		$element = $object->element;
+		if ($element == 'facturerec') $element = 'facture';
+		
 		if(in_array('ordercard',$contexts) || in_array('propalcard',$contexts) || in_array('invoicecard',$contexts)) {
         		
-        	if ($object->statut == 0  && $user->rights->{$object->element}->creer) {
+        	if ($object->statut == 0  && $user->rights->{$element}->creer) {
 			
 			
-				if($object->element=='facture')$idvar = 'facid';
+				if($element=='facture')$idvar = 'facid';
 				else $idvar='id';
 				
 				
@@ -432,15 +436,15 @@ class ActionsSubtotal
 				/**
 				 * @var $object Facture
 				 */
-				if($object->element=='facture') $object->deleteline($idLine);
+				if($element=='facture') $object->deleteline($idLine);
 				/**
 				 * @var $object Propal
 				 */
-				else if($object->element=='propal') $object->deleteline($idLine);
+				else if($element=='propal') $object->deleteline($idLine);
 				/**
 				 * @var $object Commande
 				 */
-				else if($object->element=='commande') $object->deleteline($idLine);
+				else if($element=='commande') $object->deleteline($idLine);
 			}
 			
 			header('location:?id='.$object->id);
@@ -999,13 +1003,17 @@ class ActionsSubtotal
 
 		$contexts = explode(':',$parameters['context']);
 
+		// TODO Factures recurrents non gérées.
+		$element = $object->element;
+		if ($element == 'facturerec') $element = 'facture';
+		
 		if($line->special_code!=$this->module_number || $line->product_type!=9) {
 			null;
 		}	
 		else if (in_array('invoicecard',$contexts) || in_array('propalcard',$contexts) || in_array('ordercard',$contexts)) 
         {
         	
-			if($object->element=='facture')$idvar = 'facid';
+			if($element=='facture')$idvar = 'facid';
 			else $idvar='id';
 					
 					if($action=='savelinetitle' && $_POST['lineid']===$line->id) {
@@ -1016,15 +1024,15 @@ class ActionsSubtotal
 						/**
 						 * @var $object Facture
 						 */
-						if($object->element=='facture') $object->updateline($line->id,$description, 0,$line->qty,0,'','',0,0,0,'HT',$pagebreak,9,0,0,null,0,$_POST['linetitle'], $this->module_number);
+						if($element=='facture') $object->updateline($line->id,$description, 0,$line->qty,0,'','',0,0,0,'HT',$pagebreak,9,0,0,null,0,$_POST['linetitle'], $this->module_number);
 						/**
 						* @var $object Propal
 						*/
-						else if($object->element=='propal') $object->updateline($line->id, 0,$line->qty,0,0,0,0, $description ,'HT',$pagebreak,$this->module_number,0,0,0,0,$_POST['linetitle'],9);
+						else if($element=='propal') $object->updateline($line->id, 0,$line->qty,0,0,0,0, $description ,'HT',$pagebreak,$this->module_number,0,0,0,0,$_POST['linetitle'],9);
 						/**
 						 * @var $object Commande
 						 */
-						else if($object->element=='commande') $object->updateline($line->id,$description, 0,$line->qty,0,0,0,0,'HT',$pagebreak,'','',9,0,0,null,0,$_POST['linetitle'], $this->module_number);
+						else if($element=='commande') $object->updateline($line->id,$description, 0,$line->qty,0,0,0,0,'HT',$pagebreak,'','',9,0,0,null,0,$_POST['linetitle'], $this->module_number);
 						
 					}
 					else if($action=='editlinetitle') {
@@ -1072,7 +1080,7 @@ class ActionsSubtotal
 					if($conf->margin->enabled) $colspan++;
 					if($conf->global->DISPLAY_MARGIN_RATES) $colspan++;
 					if($conf->global->DISPLAY_MARK_RATES) $colspan++;
-					if($object->element == 'facture' && $conf->global->INVOICE_USE_SITUATION && $object->type == Facture::TYPE_SITUATION) $colspan++;
+					if($element == 'facture' && $conf->global->INVOICE_USE_SITUATION && $object->type == Facture::TYPE_SITUATION) $colspan++;
 					if($conf->global->PRODUCT_USE_UNITS) $colspan++;
 					
 					/* Titre */
@@ -1241,7 +1249,7 @@ class ActionsSubtotal
 							}
 							else{
 								
-								if ($object->statut == 0  && $user->rights->{$object->element}->creer) {
+								if ($object->statut == 0  && $user->rights->{$element}->creer) {
 								
 								?>
 									<a href="<?php echo '?'.$idvar.'='.$object->id.'&action=editlinetitle&lineid='.$line->id ?>">
@@ -1262,7 +1270,7 @@ class ActionsSubtotal
 								<?php
 							}
 							else{
-								if ($object->statut == 0  && $user->rights->{$object->element}->creer) {
+								if ($object->statut == 0  && $user->rights->{$element}->creer) {
 								
 									?>
 										<a href="<?php echo '?'.$idvar.'='.$object->id.'&action=ask_deleteline&lineid='.$line->id ?>">
@@ -1290,7 +1298,7 @@ class ActionsSubtotal
 					<td align="center" class="tdlineupdown">
 					</td>
 				    <?php } else { ?>
-				    <td align="center"<?php echo ((empty($conf->browser->phone) && ($object->statut == 0  && $user->rights->{$object->element}->creer))?' class="tdlineupdown"':''); ?>></td>
+				    <td align="center"<?php echo ((empty($conf->browser->phone) && ($object->statut == 0  && $user->rights->{$element}->creer))?' class="tdlineupdown"':''); ?>></td>
 					<?php } ?>
 
 					</tr>
