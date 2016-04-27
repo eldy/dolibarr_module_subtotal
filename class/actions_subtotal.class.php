@@ -59,10 +59,9 @@ class ActionsSubtotal
 				}
 				else if($action==='ask_deleteallline') {
 						$form=new Form($db);
-						
 						$lineid = GETPOST('lineid','integer');
 						$TIdForGroup = $this->getArrayOfLineForAGroup($object, $lineid);
-					
+						
 						$nbLines = count($TIdForGroup);
 					
 						$formconfirm=$form->formconfirm($_SERVER["PHP_SELF"].'?id='.$object->id.'&lineid='.$lineid, $langs->trans('deleteWithAllLines'), $langs->trans('ConfirmDeleteAllThisLines',$nbLines), 'confirm_delete_all_lines','',0,1);
@@ -380,6 +379,8 @@ class ActionsSubtotal
 	
 	function doActions($parameters, &$object, $action, $hookmanager) {
 		global $conf;
+		
+		$element = $object->element;
 		
 		if($action === 'builddoc') {
 			
