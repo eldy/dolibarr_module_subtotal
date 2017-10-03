@@ -237,5 +237,5 @@ dol_fiche_end();
 //$somethingshown=$asset->showLinkedObjectBlock();
 
 // End of page
-$db->close();
 llxFooter();
+$db->close();
